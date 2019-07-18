@@ -1,8 +1,10 @@
+
 SELECT * FROM
 (SELECT
     mst.recruit_mst_id,
     mst.year,
     mst.orders,
+    applct.applct_tp,
     applct.applct_nm,
     applct.recruit_applct_id,
     ptcp.usr_nm,
@@ -21,6 +23,7 @@ SELECT
     mst.recruit_mst_id,
     mst.year,
     mst.orders,
+    applct.applct_tp,
     applct.applct_nm,
     applct.recruit_applct_id,
     ptcp.usr_nm,
@@ -32,12 +35,16 @@ SELECT
 FROM recruit_mst AS mst
     LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
     LEFT JOIN recruit_ptcp AS ptcp ON ptcp.itvw_applct_tp = applct.applct_tp and ptcp.recruit_mst_id = mst.recruit_mst_id
-) as t
+) AS t
 
 WHERE NOT (t.kind = 'e' 
-  AND 0 < (SELECT COUNT(*) FROM t WHERE recruit_mst_id = t.recruit_mst_id AND recruit_applct_id = t.recruit_applct_id AND t.kind != 'e')) 
+AND 0 < (SELECT COUNT(*)
+        FROM recruit_mst AS mst 
+             LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
+             LEFT JOIN recruit_ptcp AS ptcp ON (ptcp.ppr_applct_tp = applct.applct_tp or ptcp.itvw_applct_tp = applct.applct_tp) and ptcp.recruit_mst_id = mst.recruit_mst_id
+        WHERE mst.recruit_mst_id = t.recruit_mst_id AND applct.applct_tp = t.applct_tp AND (ptcp.ppr_applct_tp is not null or ptcp.itvw_applct_tp is not null)))
 
-GROUP BY t.recruit_mst_id, t.recruit_applct_id, t.kind
+GROUP BY t.recruit_mst_id, t.recruit_applct_id, t.kind, t.usr_nm
 ORDER BY t.year, t.orders;
 
 
