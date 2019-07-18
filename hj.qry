@@ -37,3 +37,43 @@ FROM recruit_mst AS mst
 GROUP BY t.recruit_mst_id, t.recruit_applct_id, t.kind
 
 ORDER BY t.year, .t.orders;
+
+
+--------
+
+CREATE TABLE recruit_mst ( 
+recruit_mst_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+year VARCHAR(30) NOT NULL, 
+orders VARCHAR(30) NOT NULL
+); 
+
+CREATE TABLE recruit_applct ( 
+recruit_applct_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+applct_tp VARCHAR(30) NOT NULL, 
+applct_nm VARCHAR(30) NOT NULL, 
+recruit_mst_id INT(6) UNSIGNED 
+);
+
+CREATE TABLE recruit_ptcp ( 
+recruit_ptcp_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+usr_nm VARCHAR(30) NOT NULL,
+ppr_applct_tp INT(6) UNSIGNED,
+itvw_applct_tp INT(6) UNSIGNED, 
+recruit_mst_id INT(6) UNSIGNED
+);
+
+
+INSERT INTO `recruit_mst` (`recruit_mst_id`, `year`, `orders`) VALUES ('1', '2019', '1'); 
+INSERT INTO `recruit_mst` (`recruit_mst_id`, `year`, `orders`) VALUES ('2', '2019', '2');
+INSERT INTO `recruit_mst` (`recruit_mst_id`, `year`, `orders`) VALUES ('3', '2019', '3');
+
+INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('1', '01', 'economics', '1');
+INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('2', '01', 'economics', '2');
+INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('3', '02', 'mathmatics', '2');
+INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('4', '01', 'economics', '3');
+INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('5', '02', 'mathmatics', '3');
+INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('6', '03', 'english', '3');
+
+INSERT INTO `recruit_ptcp` (`recruit_ptcp_id`, `usr_nm`, `ppr_applct_tp`, `itvw_applct_tp`, `recruit_mst_id`) VALUES ('1', 'john', '01', '', '2');
+INSERT INTO `recruit_ptcp` (`recruit_ptcp_id`, `usr_nm`, `ppr_applct_tp`, `itvw_applct_tp`, `recruit_mst_id`) VALUES ('2', 'john', '', '01', '1');
+INSERT INTO `recruit_ptcp` (`recruit_ptcp_id`, `usr_nm`, `ppr_applct_tp`, `itvw_applct_tp`, `recruit_mst_id`) VALUES ('3', 'donald', '02', '01', '3');
