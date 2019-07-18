@@ -14,7 +14,7 @@ SELECT * FROM
 FROM recruit_mst AS mst
     LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
     LEFT JOIN recruit_ptcp AS ptcp ON ptcp.ppr_applct_tp = applct.applct_tp and ptcp.recruit_mst_id = mst.recruit_mst_id
-    
+
 UNION
 
 SELECT
@@ -33,10 +33,12 @@ FROM recruit_mst AS mst
     LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
     LEFT JOIN recruit_ptcp AS ptcp ON ptcp.itvw_applct_tp = applct.applct_tp and ptcp.recruit_mst_id = mst.recruit_mst_id
 ) as t
-    
-GROUP BY t.recruit_mst_id, t.recruit_applct_id, t.kind
 
-ORDER BY t.year, .t.orders;
+WHERE NOT (t.kind = 'e' 
+  AND 0 < (SELECT COUNT(*) FROM t WHERE recruit_mst_id = t.recruit_mst_id AND recruit_applct_id = t.recruit_applct_id AND t.kind != 'e')) 
+
+GROUP BY t.recruit_mst_id, t.recruit_applct_id, t.kind
+ORDER BY t.year, t.orders;
 
 
 --------
