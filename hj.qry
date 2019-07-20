@@ -1,95 +1,90 @@
-
 SELECT * FROM
 (SELECT
-    mst.recruit_mst_id,
-    mst.year,
-    mst.orders,
-    applct.applct_tp,
-    applct.applct_nm,
-    applct.recruit_applct_id,
-    ptcp.usr_nm,
+	mst.RECRUIT_MST_ID,
+	applct.APPLCT_TP,
+    applct.APPLCT_MST_ID,
+	dtl.RECRUIT_DTL_ID,     
+	CONCAT(mst.YEAR, mst.ORDERS) AS ORDERS,
+	mst.YEAR,
+	mst.ORDERS AS "chasu",
+	mst.RC_FR,
+	mst.RC_TO,
+	mst.PP_DT, 
+	mst.EX_DT, 
+	mst.IN_DT,
+	cm_cd.CODE_NM,
+    prtc.EST_USR_ID,
+	usr.USR_NM,
+	usr.USR_INEX,
+	mst.EX_ORG,
     CASE
-        WHEN ptcp.usr_nm is null
+        WHEN prtc.EST_USR_ID is null
         THEN "e" 
         ELSE 's'
-    END AS kind
-FROM recruit_mst AS mst
-    LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
-    LEFT JOIN recruit_ptcp AS ptcp ON ptcp.ppr_applct_tp = applct.applct_tp and ptcp.recruit_mst_id = mst.recruit_mst_id
-
+    END AS gubun
+FROM cust_recruit.recruit_mst AS mst
+    LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+	LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID AND prtc.USE_YN = 'Y'
+	LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+	LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+	LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
+	AND mst.USE_YN = 'Y'
+		
 UNION
 
 SELECT
-    mst.recruit_mst_id,
-    mst.year,
-    mst.orders,
-    applct.applct_tp,
-    applct.applct_nm,
-    applct.recruit_applct_id,
-    ptcp.usr_nm,
+	mst.RECRUIT_MST_ID,
+	applct.APPLCT_TP,
+    applct.APPLCT_MST_ID,
+	dtl.RECRUIT_DTL_ID,     
+	CONCAT(mst.YEAR, mst.ORDERS) AS ORDERS,
+	mst.YEAR,
+	mst.ORDERS AS "chasu",
+	mst.RC_FR,
+	mst.RC_TO,
+	mst.PP_DT, 
+	mst.EX_DT, 
+	mst.IN_DT,
+	cm_cd.CODE_NM,
+    prtc.EST_USR_ID,
+	usr.USR_NM,
+	usr.USR_INEX,
+	mst.EX_ORG,
     CASE
-        WHEN ptcp.usr_nm is null
+        WHEN prtc.EST_USR_ID is null
         THEN "e" 
         ELSE 'm'
-    END AS kind
-FROM recruit_mst AS mst
-    LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
-    LEFT JOIN recruit_ptcp AS ptcp ON ptcp.itvw_applct_tp = applct.applct_tp and ptcp.recruit_mst_id = mst.recruit_mst_id
+    END AS gubun
+FROM cust_recruit.recruit_mst AS mst
+    LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+	LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID AND prtc.USE_YN = 'Y'
+	LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+	LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+	LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
+	AND mst.USE_YN = 'Y'
 ) AS t
 
-WHERE NOT (t.kind = 'e' 
+WHERE NOT (t.gubun = 'e' 
            AND 0 < (SELECT COUNT(*)
-                    FROM recruit_mst AS mst 
-                      LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
-                      LEFT JOIN recruit_ptcp AS ptcp ON (ptcp.ppr_applct_tp = applct.applct_tp or ptcp.itvw_applct_tp = applct.applct_tp) and ptcp.recruit_mst_id = mst.recruit_mst_id
-                    WHERE mst.recruit_mst_id = t.recruit_mst_id AND applct.applct_tp = t.applct_tp AND (ptcp.ppr_applct_tp is not null or ptcp.itvw_applct_tp is not null)))
+                    FROM cust_recruit.recruit_mst AS mst
+						LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+						LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
+						LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+						LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+						LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+                    WHERE mst.RECRUIT_MST_ID = t.RECRUIT_MST_ID AND applct.APPLCT_TP = t.APPLCT_TP AND (prtc.PPR_APPLCT_MST_ID is not null or prtc.ITVW_APPLCT_MST_ID is not null)))
 
-AND t.recruit_mst_id IN (SELECT mst.recruit_mst_id
-                         FROM recruit_mst AS mst 
-                           LEFT JOIN recruit_applct AS applct ON mst.recruit_mst_id = applct.recruit_mst_id
-                           LEFT JOIN recruit_ptcp AS ptcp ON (ptcp.ppr_applct_tp = applct.applct_tp or ptcp.itvw_applct_tp = applct.applct_tp) and ptcp.recruit_mst_id = mst.recruit_mst_id
-                         WHERE ptcp.usr_nm = 'donald'
-                         AND mst.year = '2019')
+AND t.RECRUIT_MST_ID IN (SELECT mst.RECRUIT_MST_ID
+                         FROM cust_recruit.recruit_mst AS mst
+							LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+							LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
+							LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+							LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+							LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+                         
+						 )
 
-GROUP BY t.recruit_mst_id, t.recruit_applct_id, t.kind, t.usr_nm
-ORDER BY t.year, t.orders;
-
-
---------
-
-CREATE TABLE recruit_mst ( 
-recruit_mst_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-year VARCHAR(30) NOT NULL, 
-orders VARCHAR(30) NOT NULL
-); 
-
-CREATE TABLE recruit_applct ( 
-recruit_applct_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-applct_tp VARCHAR(30) NOT NULL, 
-applct_nm VARCHAR(30) NOT NULL, 
-recruit_mst_id INT(6) UNSIGNED 
-);
-
-CREATE TABLE recruit_ptcp ( 
-recruit_ptcp_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-usr_nm VARCHAR(30) NOT NULL,
-ppr_applct_tp INT(6) UNSIGNED,
-itvw_applct_tp INT(6) UNSIGNED, 
-recruit_mst_id INT(6) UNSIGNED
-);
-
-
-INSERT INTO `recruit_mst` (`recruit_mst_id`, `year`, `orders`) VALUES ('1', '2019', '1'); 
-INSERT INTO `recruit_mst` (`recruit_mst_id`, `year`, `orders`) VALUES ('2', '2019', '2');
-INSERT INTO `recruit_mst` (`recruit_mst_id`, `year`, `orders`) VALUES ('3', '2019', '3');
-
-INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('1', '01', 'economics', '1');
-INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('2', '01', 'economics', '2');
-INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('3', '02', 'mathmatics', '2');
-INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('4', '01', 'economics', '3');
-INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('5', '02', 'mathmatics', '3');
-INSERT INTO `recruit_applct` (`recruit_applct_id`, `applct_tp`, `applct_nm`, `recruit_mst_id`) VALUES ('6', '03', 'english', '3');
-
-INSERT INTO `recruit_ptcp` (`recruit_ptcp_id`, `usr_nm`, `ppr_applct_tp`, `itvw_applct_tp`, `recruit_mst_id`) VALUES ('1', 'john', '01', '', '2');
-INSERT INTO `recruit_ptcp` (`recruit_ptcp_id`, `usr_nm`, `ppr_applct_tp`, `itvw_applct_tp`, `recruit_mst_id`) VALUES ('2', 'john', '', '01', '1');
-INSERT INTO `recruit_ptcp` (`recruit_ptcp_id`, `usr_nm`, `ppr_applct_tp`, `itvw_applct_tp`, `recruit_mst_id`) VALUES ('3', 'donald', '02', '01', '3');
+GROUP BY t.RECRUIT_MST_ID, t.APPLCT_TP, t.gubun, t.EST_USR_ID
+ORDER BY CAST(YEAR as unsigned), CAST(chasu as unsigned);
