@@ -1,90 +1,147 @@
-SELECT * FROM
-(SELECT
-	mst.RECRUIT_MST_ID,
-	applct.APPLCT_TP,
-    applct.APPLCT_MST_ID,
-	dtl.RECRUIT_DTL_ID,     
-	CONCAT(mst.YEAR, mst.ORDERS) AS ORDERS,
-	mst.YEAR,
-	mst.ORDERS AS "chasu",
-	mst.RC_FR,
-	mst.RC_TO,
-	mst.PP_DT, 
-	mst.EX_DT, 
-	mst.IN_DT,
-	cm_cd.CODE_NM,
-    prtc.EST_USR_ID,
-	usr.USR_NM,
-	usr.USR_INEX,
-	mst.EX_ORG,
-    CASE
-        WHEN prtc.EST_USR_ID is null
-        THEN "e" 
-        ELSE 's'
-    END AS gubun
-FROM cust_recruit.recruit_mst AS mst
-    LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
-	LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID AND prtc.USE_YN = 'Y'
-	LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
-	LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
-	LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
-WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
-	AND mst.USE_YN = 'Y'
+<select id="entry.esmtMngListTemp" parameterType="map" resultType="map">
+		SELECT * FROM
+		(SELECT
+			mst.RECRUIT_MST_ID,
+			applct.APPLCT_TP,
+		    applct.APPLCT_MST_ID,
+			dtl.RECRUIT_DTL_ID,     
+			CONCAT(mst.YEAR, mst.ORDERS) AS ORDERS,
+			mst.YEAR,
+			mst.ORDERS AS "chasu",
+			mst.RC_FR,
+			mst.RC_TO,
+			mst.PP_DT, 
+			mst.EX_DT, 
+			mst.IN_DT,
+			cm_cd.CODE_NM,
+		    prtc.EST_USR_ID,
+			usr.USR_NM,
+			usr.USR_INEX,
+			mst.EX_ORG,
+		    CASE
+		        WHEN prtc.EST_USR_ID is null
+		        THEN "e" 
+		        ELSE 's'
+		    END AS gubun
+		FROM cust_recruit.recruit_mst AS mst
+		    LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+			LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID AND prtc.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+		WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
+			AND mst.USE_YN = 'Y'
+				
+		UNION
 		
-UNION
-
-SELECT
-	mst.RECRUIT_MST_ID,
-	applct.APPLCT_TP,
-    applct.APPLCT_MST_ID,
-	dtl.RECRUIT_DTL_ID,     
-	CONCAT(mst.YEAR, mst.ORDERS) AS ORDERS,
-	mst.YEAR,
-	mst.ORDERS AS "chasu",
-	mst.RC_FR,
-	mst.RC_TO,
-	mst.PP_DT, 
-	mst.EX_DT, 
-	mst.IN_DT,
-	cm_cd.CODE_NM,
-    prtc.EST_USR_ID,
-	usr.USR_NM,
-	usr.USR_INEX,
-	mst.EX_ORG,
-    CASE
-        WHEN prtc.EST_USR_ID is null
-        THEN "e" 
-        ELSE 'm'
-    END AS gubun
-FROM cust_recruit.recruit_mst AS mst
-    LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
-	LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID AND prtc.USE_YN = 'Y'
-	LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
-	LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
-	LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
-WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
-	AND mst.USE_YN = 'Y'
-) AS t
-
-WHERE NOT (t.gubun = 'e' 
-           AND 0 < (SELECT COUNT(*)
-                    FROM cust_recruit.recruit_mst AS mst
-						LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
-						LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
-						LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
-						LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
-						LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
-                    WHERE mst.RECRUIT_MST_ID = t.RECRUIT_MST_ID AND applct.APPLCT_TP = t.APPLCT_TP AND (prtc.PPR_APPLCT_MST_ID is not null or prtc.ITVW_APPLCT_MST_ID is not null)))
-
-AND t.RECRUIT_MST_ID IN (SELECT mst.RECRUIT_MST_ID
-                         FROM cust_recruit.recruit_mst AS mst
-							LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
-							LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
-							LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
-							LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
-							LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
-                         
-						 )
-
-GROUP BY t.RECRUIT_MST_ID, t.APPLCT_TP, t.gubun, t.EST_USR_ID
-ORDER BY CAST(YEAR as unsigned), CAST(chasu as unsigned);
+		SELECT
+			mst.RECRUIT_MST_ID,
+			applct.APPLCT_TP,
+		    applct.APPLCT_MST_ID,
+			dtl.RECRUIT_DTL_ID,     
+			CONCAT(mst.YEAR, mst.ORDERS) AS ORDERS,
+			mst.YEAR,
+			mst.ORDERS AS "chasu",
+			mst.RC_FR,
+			mst.RC_TO,
+			mst.PP_DT, 
+			mst.EX_DT, 
+			mst.IN_DT,
+			cm_cd.CODE_NM,
+		    prtc.EST_USR_ID,
+			usr.USR_NM,
+			usr.USR_INEX,
+			mst.EX_ORG,
+		    CASE
+		        WHEN prtc.EST_USR_ID is null
+		        THEN "e" 
+		        ELSE 'm'
+		    END AS gubun
+		FROM cust_recruit.recruit_mst AS mst
+		    LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+			LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID AND prtc.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+		WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
+			AND mst.USE_YN = 'Y'
+		) AS t
+		
+		<!-- s:서류 m:면접 e:빈값 로 구분 후
+		중복되는 e를 제거해주기 위해 해당 회차분야에 s나 m 이 하나라도 있으면 미포함시킴
+		(서비스단 로직 상 꼭 필요하진 않으나 처리함) --> 
+		WHERE NOT (t.gubun = 'e' 
+		           AND 0 < (SELECT COUNT(*)
+		                    FROM cust_recruit.recruit_mst AS mst
+								LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+								LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
+								LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+								LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+								LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+		                    WHERE mst.USE_YN = 'Y'
+		                      AND mst.RECRUIT_MST_ID = t.RECRUIT_MST_ID AND applct.APPLCT_TP = t.APPLCT_TP AND (prtc.PPR_APPLCT_MST_ID is not null or prtc.ITVW_APPLCT_MST_ID is not null)))
+		
+		<!-- 조건과 페이지 처리한 회차에 포함되는 것들만 가져옴 -->
+		AND t.RECRUIT_MST_ID IN (SELECT mst.RECRUIT_MST_ID
+		                         FROM cust_recruit.recruit_mst AS mst
+									LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+									LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
+									LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+									LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+									LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+								 WHERE mst.USE_YN = 'Y'	
+								<if test="estUsrKnm != ''">
+									AND usr.USR_NM LIKE CONCAT('%',#{estUsrKnm},'%')
+								</if>
+								<if test="applctTp != ''">
+									AND applct.APPLCT_TP = #{applctTp}
+								</if>
+								<if test="year != ''">
+									AND mst.YEAR = #{year}
+								</if>
+								<if test="orders != ''">
+									AND mst.ORDERS = #{orders}
+								</if>
+								<if test="startDate != '' and endDate != ''">
+									AND mst.PP_DT BETWEEN #{startDate} AND #{endDate}
+									AND mst.SC_DT BETWEEN #{startDate} AND #{endDate}
+								</if> -->
+									
+		                         	LIMIT ${skip}, ${pageSize})
+		
+		GROUP BY t.RECRUIT_MST_ID, t.APPLCT_TP, t.gubun, t.EST_USR_ID
+		ORDER BY CAST(YEAR as unsigned), CAST(chasu as unsigned)
+								
+	</select>
+	<select id="entry.esmtMngListTempCnt" parameterType="map" resultType="int">
+		SELECT COUNT(*) FROM
+		(    
+		SELECT mst.RECRUIT_MST_ID
+		FROM cust_recruit.recruit_mst AS mst
+			LEFT JOIN cust_recruit.recruit_applct_mst AS applct ON mst.RECRUIT_MST_ID = applct.RECRUIT_MST_ID AND applct.USE_YN = 'Y'  
+			LEFT JOIN cust_recruit.recruit_est_prtc AS prtc ON mst.RECRUIT_MST_ID = prtc.RECRUIT_MST_ID AND (applct.APPLCT_MST_ID = prtc.ITVW_APPLCT_MST_ID or applct.APPLCT_MST_ID = prtc.PPR_APPLCT_MST_ID) AND prtc.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_dtl AS dtl ON applct.APPLCT_MST_ID = dtl.APPLCT_MST_ID AND dtl.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_common_code AS cm_cd ON applct.APPLCT_TP = cm_cd.CODE_CD AND cm_cd.USE_YN = 'Y'
+			LEFT JOIN cust_recruit.recruit_est_usr AS usr ON prtc.EST_USR_ID = usr.EST_USR_ID AND usr.USE_YN = 'Y'
+		WHERE cm_cd.UP_CODE_CD = "APPLCT_TP"
+			AND mst.USE_YN = 'Y'
+			<if test="estUsrKnm != ''">
+				AND usr.USR_NM LIKE CONCAT('%',#{estUsrKnm},'%')
+			</if>
+			<if test="applctTp != ''">
+				AND applct.APPLCT_TP = #{applctTp}
+			</if>
+			<if test="year != ''">
+				AND mst.YEAR = #{year}
+			</if>
+			<if test="orders != ''">
+				AND mst.ORDERS = #{orders}
+			</if>
+			<if test="startDate != '' and endDate != ''">
+				AND mst.PP_DT BETWEEN #{startDate} AND #{endDate}
+				AND mst.SC_DT BETWEEN #{startDate} AND #{endDate}
+			</if>
+			
+		GROUP BY mst.YEAR, mst.ORDERS 
+		) as t
+	</select>
